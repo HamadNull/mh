@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Authentication Codes (Python)</title>
+  <style>
+    body { font-family: Arial, sans-serif; direction: rtl; margin: 0; padding: 0; background: #f0f2f5; }
+    #main-content { padding: 20px; display: none; }
+
+    #fake404 {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #f7f7f7;
+      color: #000000;
+      text-align: center;
+    }
+    #fake404 h1 { font-size: 80px; margin: 0; color: #e74c3c; }
+    #fake404 p { font-size: 20px; }
+
+    .worksheet { background: white; border-radius: 10px; padding: 20px; margin-bottom: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .code-container { position: relative; margin: 15px 0; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; }
+    .copy-btn { position: absolute; left: 10px; top: 10px; padding: 8px 15px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; transition: all 0.3s; z-index: 2; }
+    .copy-btn:hover { background: #45a049; }
+    pre { background: #f8f9fa; padding: 20px; margin: 0; overflow-x: auto; font-family: 'Courier New', monospace; direction: ltr; text-align: left; }
+    .code-header { background: #f8f9fa; padding: 10px; border-bottom: 1px solid #ddd; }
+    .code-number { background: #3498db; color: white; padding: 3px 8px; border-radius: 4px; }
+    h4 { margin: 10px 0 5px 0; color: #333; }
+  </style>
+</head>
+<body>
+
+<div id="fake404">
+  <h1>404</h1>
+  <p>الصفحة غير موجودة</p>
+</div>
+
+<div id="main-content">
+  <h1>Authentication Codes (Python)</h1>
+  <p>اضغط "Alt" + رقم الكود (1 إلى 3) لنسخ الكود بسرعة.</p>
+
+  <div class="worksheet" data-code-id="1">
+    <div class="code-container">
+      <div class="code-header">
+        <span class="code-number">الكود 1</span>
+      </div>
+      <button class="copy-btn">نسخ</button>
+      <h4>MFA Login with TOTP</h4>
+<pre><code>import hmac, hashlib, struct, time, base64
+
+USERNAME, PASSWORD = "student", "12345"
+SECRET_KEY = "JBSWY3DPEHPK3PXP"
+
+def totp():
+    key = base64.b32decode(SECRET_KEY)
+    msg = struct.pack("&gt;Q", int(time.time()) // 30)
+    h = hmac.new(key, msg, hashlib.sha1).digest()
+    n = struct.unpack("&gt;I", h[h[-1] &amp; 15:][:4])[0] &amp; 0x7FFFFFFF
+    return str(n % 1000000).zfill(6)
+
+print("=== MFA Login ===")
+u, p = input("Username: "), input("Password: ")
+
+if u == USERNAME and p == PASSWORD:
+    print("Password: Correct")
+    print("Test OTP:", totp())
+    otp = input("Enter OTP: ")
+    print("Login successful. Access granted." if hmac.compare_digest(otp, totp())
+          else "Invalid OTP. Access denied.")
+else:
+    print("Invalid username or password. Access denied.")
+</code></pre>
+    </div>
+  </div>
+
+  <div class="worksheet" data-code-id="2">
+    <div class="code-container">
+      <div class="code-header">
+        <span class="code-number">الكود 2</span>
+      </div>
+      <button class="copy-btn">نسخ</button>
+      <h4>Salted SHA-256 Password Hashing</h4>
+<pre><code>import hashlib
+import os
+
+password = input("Enter password: ")
+
+salt = os.urandom(16)
+
+hashed = hashlib.sha256(salt + password.encode()).hexdigest()
+
+print("\nSalt:", salt.hex())
+print("Hashed password:", hashed)
+
+login = input("\nEnter password again: ")
+
+check = hashlib.sha256(salt + login.encode()).hexdigest()
+
+if check == hashed:
+    print("Login successful!")
+else:
+    print("Wrong password!")
+</code></pre>
+    </div>
+  </div>
+
+  <div class="worksheet" data-code-id="3">
+    <div class="code-container">
+      <div class="code-header">
+        <span class="code-number">الكود 3</span>
+      </div>
+      <button class="copy-btn">نسخ</button>
+      <h4>Simple Username / Password Authentication</h4>
+<pre><code>correct_username = "admin"
+correct_password = "12345"
+
+username = input("Enter username: ")
+password = input("Enter password: ")
+
+if username == correct_username and password == correct_password:
+    print("Login successful!")
+    print("Welcome,", username)
+else:
+    print("Login failed!")
+    print("Incorrect username or password.")
+</code></pre>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let secret = "";
+document.addEventListener("keydown", function(e){
+  secret += e.key;
+  if(secret.includes("07")){
+    document.getElementById("main-content").style.display="block";
+    document.getElementById("fake404").style.display="none";
+  }
+  if(secret.length > 5) secret = secret.slice(-2);
+});
+
+function copyCode(codeId) {
+  const codeElement = document.querySelector(`.worksheet[data-code-id="${codeId}"] code`);
+  if (codeElement) {
+    const code = codeElement.innerText;
+    const tempTextarea = document.createElement('textarea');
+    tempTextarea.value = code;
+    document.body.appendChild(tempTextarea);
+    tempTextarea.select();
+    tempTextarea.setSelectionRange(0, 99999);
+
+    try {
+      document.execCommand('copy');
+      const copyBtn = document.querySelector(`.worksheet[data-code-id="${codeId}"] .copy-btn`);
+      if (copyBtn) {
+        copyBtn.style.background = '#2ecc71';
+        copyBtn.innerText = '✓ تم النسخ';
+        setTimeout(() => {
+          copyBtn.style.background = '#4CAF50';
+          copyBtn.innerText = 'نسخ';
+        }, 2000);
+      }
+    } catch (err) {
+      console.error('Failed to copy text: ', err);
+    } finally {
+      document.body.removeChild(tempTextarea);
+    }
+  }
+}
+
+document.addEventListener('keydown', function(event) {
+  const key = event.key.toLowerCase();
+  let codeId = '';
+
+  if (event.altKey && key >= '1' && key <= '3') {
+    codeId = key;
+  }
+
+  if (codeId) {
+    copyCode(codeId);
+    event.preventDefault();
+  }
+});
+
+const copyButtons = document.querySelectorAll('.copy-btn');
+copyButtons.forEach(button => {
+  button.onclick = function() {
+    const worksheet = this.closest('.worksheet');
+    const codeId = worksheet.getAttribute('data-code-id');
+    copyCode(codeId);
+  };
+});
+</script>
+
+</body>
+</html>
