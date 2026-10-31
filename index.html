@@ -8,6 +8,7 @@
     body { font-family: Arial, sans-serif; direction: rtl; margin: 0; padding: 0; background: #f0f2f5; }
     #main-content { padding: 20px; display: none; }
 
+    /* شاشة 404 الوهمية */
     #fake404 {
       display: flex;
       flex-direction: column;
@@ -18,8 +19,17 @@
       color: #000000;
       text-align: center;
     }
-    #fake404 h1 { font-size: 80px; margin: 0; color: #e74c3c; }
-    #fake404 p { font-size: 20px; }
+
+    /* الصورة بدل نص 404 — بنفس حجمه */
+    #fake404 .error-img {
+      height: 100px;
+      width: auto;
+      max-width: 90%;
+      margin: 0 0 10px 0;
+      display: block;
+    }
+
+    #fake404 p { font-size: 20px; margin: 0; }
 
     .worksheet { background: white; border-radius: 10px; padding: 20px; margin-bottom: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
     .code-container { position: relative; margin: 15px 0; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; }
@@ -34,7 +44,7 @@
 <body>
 
 <div id="fake404">
-  <h1>404</h1>
+  <img src="404.png" alt="404" class="error-img">
   <p>الصفحة غير موجودة</p>
 </div>
 
